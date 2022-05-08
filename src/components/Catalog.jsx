@@ -30,11 +30,11 @@ const columns = [
 
 const Catalog = () => {
   const data = JSON.parse(JSON.stringify(useSelector((state) => state.vehicles.value)));
-  const userData = JSON.parse(localStorage.getItem("user"));
+  const userData = useSelector((state) => state.user.value.loggedInUser);
   const dispatch = useDispatch();
 
   let dataToDisplay = data;
-  let userId = userData ? userData[0] : "";
+  let userId = userData ? userData.userId : "";
 
   if (userId) {
     const userVehicles = data.filter((vehicle) => vehicle.userId === userId);
