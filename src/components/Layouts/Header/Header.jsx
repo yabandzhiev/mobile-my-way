@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "../../store/user/userSlice";
+import { logoutUser } from "../../../store/user/userSlice";
 
 import "./Header.scss";
 

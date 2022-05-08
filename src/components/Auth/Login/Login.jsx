@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { loginUser } from "../../store/user/userSlice";
+import { loginUser } from "../../../store/user/userSlice";
 import { Button, TextField, Grid, Typography } from "@mui/material";
 
 const initialFormFields = {

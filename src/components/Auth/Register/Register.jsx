@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, TextField, Grid, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 
-import { registerUser } from "../../store/user/userSlice";
+import { registerUser } from "../../../store/user/userSlice";
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState("");
