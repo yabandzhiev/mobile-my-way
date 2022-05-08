@@ -1,0 +1,61 @@
+.backgroundImage {
+  height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.form {
+  justify-content: center;
+  min-height: 90vh;
+
+  .paper-background {
+    justify-content: center;
+    min-height: 40vh;
+    min-width: 35vh;
+    padding: 50px;
+
+    .title {
+      text-align: center;
+
+      & h5 {
+        font-weight: bold;
+      }
+    }
+
+    .button-block {
+      width: 100%;
+      font-weight: 700;
+    }
+  }
+  .links {
+    text-align: center;
+
+    & a {
+      color: blue;
+      text-decoration: none;
+    }
+    & a:visited {
+      color: blue;
+    }
+
+    & a:hover {
+      text-decoration: underline;
+    }
+
+    &:nth-child(4) {
+      padding-top: 0;
+    }
+  }
+  .logo {
+    text-align: center;
+    & img {
+      margin-top: -30px;
+      max-width: 18vh;
+      max-height: 18vh;
+    }
+    span {
+      opacity: 0.6;
+    }
+  }
+}
