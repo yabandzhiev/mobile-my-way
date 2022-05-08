@@ -3,7 +3,11 @@ import MaterialTable from "material-table";
 import { useSelector, useDispatch } from "react-redux";
 import { v4 as uuid } from "uuid";
 
-import { addNewVehicle, removeVehicle } from "../store/vehicles/vehicleSlice";
+import {
+  addNewVehicle,
+  removeVehicle,
+  updateVehicle,
+} from "../store/vehicles/vehicleSlice";
 
 const columns = [
   { title: "Make", field: "make" },
@@ -56,37 +60,39 @@ const Catalog = () => {
           isDeletable: (rowData) => (userId ? rowData.userId === userId : rowData),
           isDeleteHidden: (rowData) => (userId ? rowData.userId !== userId : rowData),
 
-          onRowAdd: (newData) =>
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                newData.id = uuid();
-                newData.userId = userId;
-                dispatch(addNewVehicle(newData));
+          ...(userId && {
+            onRowAdd: (newData) =>
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  newData.id = uuid();
+                  newData.userId = userId;
+                  dispatch(addNewVehicle(newData));
 
-                resolve();
-              }, 1000);
-            }),
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                const dataUpdate = [...data];
-                const index = oldData.tableData.id;
-                dataUpdate[index] = newData;
-                // setData([...dataUpdate]);
+                  resolve();
+                }, 1000);
+              }),
+          }),
+          ...(userId && {
+            onRowUpdate: (newData) =>
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  dispatch(updateVehicle(newData));
 
-                resolve();
-              }, 1000);
-            }),
-          onRowDelete: (oldData) =>
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                dispatch(removeVehicle([oldData]));
+                  resolve();
+                }, 1000);
+              }),
+          }),
+          ...(userId && {
+            onRowDelete: (oldData) =>
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  dispatch(removeVehicle([oldData]));
 
-                resolve();
-              }, 1000);
-            }),
+                  resolve();
+                }, 1000);
+              }),
+          }),
         }}
-        options={{}}
       />
     </div>
   );

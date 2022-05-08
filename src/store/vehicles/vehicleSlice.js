@@ -54,9 +54,18 @@ export const vehicleSlice = createSlice({
         });
       });
     },
+    updateVehicle: (state, action) => {
+      const vehicleId = action.payload.id;
+
+      const findVehicle = state.value.find((veh) => veh.id === vehicleId);
+      if (findVehicle) {
+        const vehicleIndex = state.value.indexOf(findVehicle);
+        state.value[vehicleIndex] = action.payload;
+      }
+    },
   },
 });
 
-export const { addNewVehicle, removeVehicle } = vehicleSlice.actions;
+export const { addNewVehicle, removeVehicle, updateVehicle } = vehicleSlice.actions;
 
 export default vehicleSlice.reducer;
