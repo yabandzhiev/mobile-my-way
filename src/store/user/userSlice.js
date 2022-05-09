@@ -24,12 +24,12 @@ export const userSlice = createSlice({
   reducers: {
     registerUser: (state, action) => {
       const { username, password, firstName, lastName } = action.payload;
-      const randomId = uuid();
+      const userId = uuid();
 
-      setLocalStorageUser(randomId, username, firstName, lastName);
+      setLocalStorageUser(userId, username, firstName, lastName);
 
-      state.value.allUsers.push([randomId, username, password, firstName, lastName]);
-      state.value.loggedInUser = { randomId, username, firstName, lastName };
+      state.value.allUsers.push([userId, username, password, firstName, lastName]);
+      state.value.loggedInUser = { userId, username, firstName, lastName };
     },
     loginUser: (state, action) => {
       const { username, password } = action.payload;

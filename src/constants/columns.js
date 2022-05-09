@@ -1,9 +1,11 @@
 export const columns = [
-  { title: "Make", field: "make" },
+  {
+    title: "Make",
+    field: "make",
+  },
   {
     title: "Model",
     field: "model",
-    initialEditValue: "initial edit value",
   },
   { title: "Year", field: "year", type: "numeric" },
   {
