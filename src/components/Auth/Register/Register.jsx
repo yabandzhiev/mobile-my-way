@@ -3,19 +3,37 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, TextField, Grid, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 
+import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
+import IconButton from "@mui/material/IconButton";
+import Collapse from "@mui/material/Collapse";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { registerUser } from "../../../store/user/userSlice";
 
-const SignUp = () => {
+const Register = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
 
   let navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (
+      firstName.length < 3 ||
+      lastName.length < 3 ||
+      username.length < 3 ||
+      password.length < 3
+    ) {
+      setOpen(true);
+      return setError("Something isn't the exact length it has to be!");
+    }
     dispatch(registerUser({ firstName, lastName, username, password }));
     navigate("/");
   };
@@ -24,6 +42,32 @@ const SignUp = () => {
       <Grid item className="title">
         <Typography variant="h5">Register</Typography>
       </Grid>
+      {error ? (
+        <Box sx={{ width: "100%" }}>
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ mb: 2 }}
+            >
+              {error}
+            </Alert>
+          </Collapse>
+        </Box>
+      ) : (
+        ""
+      )}
       <Grid item>
         <form onSubmit={handleSubmit}>
           <Grid container columnSpacing={2} className="name-input-fields">
@@ -40,6 +84,14 @@ const SignUp = () => {
                 onChange={(e) => {
                   setFirstName(e.target.value);
                 }}
+                error={firstName.length < 3 || firstName.length > 30}
+                helperText={
+                  firstName.length < 3
+                    ? "Name must be 3 letters or more!"
+                    : " " && firstName.length > 30
+                    ? "Name must be below 30 letters"
+                    : ""
+                }
               />
             </Grid>
             <Grid item>
@@ -55,6 +107,14 @@ const SignUp = () => {
                 onChange={(e) => {
                   setLastName(e.target.value);
                 }}
+                error={lastName.length < 3 || lastName.length > 30}
+                helperText={
+                  lastName.length < 3
+                    ? "Last name must be 3 letters or more!"
+                    : " " && lastName.length > 30
+                    ? "Last name must be below 30 letters"
+                    : ""
+                }
               />
             </Grid>
           </Grid>
@@ -74,6 +134,14 @@ const SignUp = () => {
                 onChange={(e) => {
                   setUsername(e.target.value);
                 }}
+                error={username.length < 3 || username.length > 30}
+                helperText={
+                  username.length < 3
+                    ? "Username must be 3 letters or more!"
+                    : " " && username.length > 30
+                    ? "Username must be below 30 letters"
+                    : ""
+                }
               />
             </Grid>
             <Grid item>
@@ -88,6 +156,14 @@ const SignUp = () => {
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
+                error={password.length < 3 || password.length > 30}
+                helperText={
+                  password.length < 3
+                    ? "Password must be 3 letters or more!"
+                    : " " && password.length > 30
+                    ? "Password must be below 30 letters"
+                    : ""
+                }
               />
             </Grid>
             <Grid item>
@@ -112,4 +188,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Register;
