@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
+import { Box, Alert, IconButton, Collapse } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { loginUser } from "../../../store/user/userSlice";
 import { Button, TextField, Grid, Typography } from "@mui/material";
 
@@ -15,6 +18,9 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
+
   const { username, password } = formFields;
 
   const handleSubmit = (e) => {
@@ -24,6 +30,9 @@ const Login = () => {
     const isLoggedIn = localStorage.getItem("user");
     if (isLoggedIn) {
       navigate("/");
+    } else {
+      setError("Username or password is wrong!");
+      setOpen(true);
     }
   };
 
@@ -37,6 +46,32 @@ const Login = () => {
       <Grid item className="title">
         <Typography variant="h5">Sign in</Typography>
       </Grid>
+      {error ? (
+        <Box sx={{ width: "100%" }}>
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ mb: 2 }}
+            >
+              {error}
+            </Alert>
+          </Collapse>
+        </Box>
+      ) : (
+        ""
+      )}
       <Grid item>
         <form onSubmit={handleSubmit}>
           <Grid container direction="column" spacing={2} className="input-fields">
