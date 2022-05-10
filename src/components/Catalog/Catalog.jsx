@@ -38,7 +38,7 @@ const Catalog = () => {
         columns={columns}
         data={dataToDisplay}
         title="Mobile"
-        options={{ addRowPosition: "first" }}
+        options={{ addRowPosition: "first", pageSize: dataToDisplay.length > 5 ? 10 : 5 }}
         editable={{
           isEditable: (rowData) => (userId ? rowData.userId === userId : rowData),
           isEditHidden: (rowData) => (userId ? rowData.userId !== userId : rowData),
@@ -69,7 +69,6 @@ const Catalog = () => {
                   //check if every field is filled
                   for (let key in newData) {
                     if (newData[key] === "") {
-                      console.log("aaa");
                       return reject();
                     }
                   }
