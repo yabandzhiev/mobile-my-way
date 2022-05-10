@@ -10,20 +10,26 @@ import {
   updateVehicle,
 } from "../../store/vehicles/vehicleSlice";
 
+//check if rows are empty
+const validateRow = (row) => {
+  return Object.values(row).length === columns.length;
+};
+
 const Catalog = () => {
+  //get cars and user from state
   const data = JSON.parse(JSON.stringify(useSelector((state) => state.vehicles.value)));
   const userData = useSelector((state) => state.user.value.loggedInUser);
   const dispatch = useDispatch();
 
+  const userId = userData ? userData.userId : "";
   let dataToDisplay = data;
-  let userId = userData ? userData.userId : "";
 
+  //Check if there is user and sort cars
   if (userId) {
     const userVehicles = data.filter((vehicle) => vehicle.userId === userId);
-    const restOfData = data.filter((vehicle) => vehicle.userId !== userId);
+    const restOfVehicles = data.filter((vehicle) => vehicle.userId !== userId);
 
-    restOfData.unshift(...userVehicles);
-    dataToDisplay = restOfData;
+    dataToDisplay = [...userVehicles, ...restOfVehicles];
   }
 
   return (
@@ -32,44 +38,60 @@ const Catalog = () => {
         columns={columns}
         data={dataToDisplay}
         title="Mobile"
+        options={{ addRowPosition: "first" }}
         editable={{
           isEditable: (rowData) => (userId ? rowData.userId === userId : rowData),
           isEditHidden: (rowData) => (userId ? rowData.userId !== userId : rowData),
           isDeletable: (rowData) => (userId ? rowData.userId === userId : rowData),
           isDeleteHidden: (rowData) => (userId ? rowData.userId !== userId : rowData),
 
-          ...(userId && {
-            onRowAdd: (newData) =>
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  newData.id = uuid();
-                  newData.userId = userId;
-                  dispatch(addNewVehicle(newData));
+          onRowAdd: userId
+            ? (newData) =>
+                new Promise((resolve, reject) => {
+                  const isDataValid = validateRow(newData);
+                  if (!isDataValid) {
+                    reject();
+                  } else {
+                    setTimeout(() => {
+                      newData.id = uuid();
+                      newData.userId = userId;
+                      dispatch(addNewVehicle(newData));
 
-                  resolve();
-                }, 1000);
-              }),
-          }),
-          ...(userId && {
-            onRowUpdate: (newData) =>
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  dispatch(updateVehicle(newData));
+                      resolve();
+                    }, 1000);
+                  }
+                })
+            : null,
 
-                  resolve();
-                }, 1000);
-              }),
-          }),
-          ...(userId && {
-            onRowDelete: (oldData) =>
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  dispatch(removeVehicle([oldData]));
+          onRowUpdate: userId
+            ? (newData) =>
+                new Promise((resolve, reject) => {
+                  //check if every field is filled
+                  for (let key in newData) {
+                    if (newData[key] === "") {
+                      console.log("aaa");
+                      return reject();
+                    }
+                  }
 
-                  resolve();
-                }, 1000);
-              }),
-          }),
+                  setTimeout(() => {
+                    dispatch(updateVehicle(newData));
+
+                    resolve();
+                  }, 1000);
+                })
+            : null,
+
+          onRowDelete: userId
+            ? (oldData) =>
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    dispatch(removeVehicle([oldData]));
+
+                    resolve();
+                  }, 1000);
+                })
+            : null,
         }}
       />
     </div>
