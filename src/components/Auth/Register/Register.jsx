@@ -3,10 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, TextField, Grid, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 
-import Box from "@mui/material/Box";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
-import Collapse from "@mui/material/Collapse";
+import { Box, Alert, IconButton, Collapse } from "@mui/material";
+
 import CloseIcon from "@mui/icons-material/Close";
 
 import { registerUser } from "../../../store/user/userSlice";
