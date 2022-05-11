@@ -10,17 +10,20 @@ import CloseIcon from "@mui/icons-material/Close";
 import { registerUser } from "../../../store/user/userSlice";
 
 const Register = () => {
+  //store the values in state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  //add error popup
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
 
   let navigate = useNavigate();
   const dispatch = useDispatch();
 
+  //handle submit logic
   const handleSubmit = (e) => {
     e.preventDefault();
     if (

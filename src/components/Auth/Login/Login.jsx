@@ -14,15 +14,18 @@ const initialFormFields = {
 };
 
 const Login = () => {
+  //store the input values in state
   const [formFields, setFormFields] = useState(initialFormFields);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  //add error popup
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
 
   const { username, password } = formFields;
 
+  //handle the submit logic
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(loginUser({ username, password }));
