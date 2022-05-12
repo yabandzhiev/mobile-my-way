@@ -19,8 +19,6 @@ const Register = () => {
 
   //get errors from state
   const errors = useSelector((state) => state.errors.value);
-  // const [error, setError] = useState("");
-  // const [open, setOpen] = useState(false);
 
   let navigate = useNavigate();
   const dispatch = useDispatch();
