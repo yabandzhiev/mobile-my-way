@@ -14,12 +14,17 @@ import storage from "redux-persist/lib/storage";
 
 import userReducer from "./user/userSlice";
 import vehicleReducer from "./vehicles/vehicleSlice";
+import errorsReducer from "./error/errorsSlice";
 
 const persistConfig = {
   key: "root",
   storage,
 };
-const rootReducer = combineReducers({ user: userReducer, vehicles: vehicleReducer });
+const rootReducer = combineReducers({
+  user: userReducer,
+  vehicles: vehicleReducer,
+  errors: errorsReducer,
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

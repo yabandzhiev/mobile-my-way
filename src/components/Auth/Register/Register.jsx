@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, TextField, Grid, Typography } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Box, Alert, IconButton, Collapse } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 
 import { registerUser } from "../../../store/user/userSlice";
+import { addError, removeError } from "../../../store/error/errorsSlice";
 
 const Register = () => {
   //store the values in state
@@ -16,9 +17,10 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  //add error popup
-  const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
+  //get errors from state
+  const errors = useSelector((state) => state.errors.value);
+  // const [error, setError] = useState("");
+  // const [open, setOpen] = useState(false);
 
   let navigate = useNavigate();
   const dispatch = useDispatch();
@@ -32,8 +34,7 @@ const Register = () => {
       username.length < 3 ||
       password.length < 3
     ) {
-      setOpen(true);
-      return setError("Something isn't the exact length it has to be!");
+      return dispatch(addError("Something isn't the exact length it has to be!"));
     }
     dispatch(registerUser({ firstName, lastName, username, password }));
     navigate("/");
@@ -43,9 +44,9 @@ const Register = () => {
       <Grid item className="title">
         <Typography variant="h5">Register</Typography>
       </Grid>
-      {error ? (
+      {errors.error ? (
         <Box sx={{ width: "100%" }}>
-          <Collapse in={open}>
+          <Collapse in={errors.open}>
             <Alert
               severity="error"
               action={
@@ -54,7 +55,7 @@ const Register = () => {
                   color="inherit"
                   size="small"
                   onClick={() => {
-                    setOpen(false);
+                    dispatch(removeError());
                   }}
                 >
                   <CloseIcon fontSize="inherit" />
@@ -62,7 +63,7 @@ const Register = () => {
               }
               sx={{ mb: 2 }}
             >
-              {error}
+              {errors.error}
             </Alert>
           </Collapse>
         </Box>

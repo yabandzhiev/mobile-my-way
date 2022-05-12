@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Box, Alert, IconButton, Collapse } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { Button, TextField, Grid, Typography } from "@mui/material";
 
 import { loginUser } from "../../../store/user/userSlice";
-import { Button, TextField, Grid, Typography } from "@mui/material";
+import { addError, removeError } from "../../../store/error/errorsSlice";
 
 const initialFormFields = {
   username: "",
@@ -16,12 +17,11 @@ const initialFormFields = {
 const Login = () => {
   //store the input values in state
   const [formFields, setFormFields] = useState(initialFormFields);
+
+  //get errors from state
+  const errors = useSelector((state) => state.errors.value);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  //add error popup
-  const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
 
   const { username, password } = formFields;
 
@@ -34,8 +34,7 @@ const Login = () => {
     if (isLoggedIn) {
       navigate("/");
     } else {
-      setError("Username or password is wrong!");
-      setOpen(true);
+      dispatch(addError("Username or password is wrong!"));
     }
   };
 
@@ -49,9 +48,9 @@ const Login = () => {
       <Grid item className="title">
         <Typography variant="h5">Sign in</Typography>
       </Grid>
-      {error ? (
+      {errors.error ? (
         <Box sx={{ width: "100%" }}>
-          <Collapse in={open}>
+          <Collapse in={errors.open}>
             <Alert
               severity="error"
               action={
@@ -60,7 +59,7 @@ const Login = () => {
                   color="inherit"
                   size="small"
                   onClick={() => {
-                    setOpen(false);
+                    dispatch(removeError());
                   }}
                 >
                   <CloseIcon fontSize="inherit" />
@@ -68,7 +67,7 @@ const Login = () => {
               }
               sx={{ mb: 2 }}
             >
-              {error}
+              {errors.error}
             </Alert>
           </Collapse>
         </Box>
