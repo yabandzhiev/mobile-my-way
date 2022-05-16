@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, TextField, Grid, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import { v4 as uuid } from "uuid";
 
 import { Box, Alert, IconButton, Collapse } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import { registerUser } from "../../../store/user/userSlice";
 import { addError, removeError } from "../../../store/error/errorsSlice";
+import { loginUserRequest, registerUserRequest } from "../../../api/usersRequests";
+import { loginUser } from "../../../store/user/userSlice";
 
 const Register = () => {
   //store the values in state
@@ -24,7 +26,7 @@ const Register = () => {
   const dispatch = useDispatch();
 
   //handle submit logic
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (
       firstName.length < 3 ||
@@ -34,8 +36,23 @@ const Register = () => {
     ) {
       return dispatch(addError("Something isn't the exact length it has to be!"));
     }
-    dispatch(registerUser({ firstName, lastName, username, password }));
-    navigate("/");
+
+    const id = uuid();
+    const register = await registerUserRequest({
+      id,
+      username,
+      password,
+      firstName,
+      lastName,
+    });
+
+    if (register.status === 200) {
+      const login = await loginUserRequest(username, password);
+
+      dispatch(loginUser(login.data));
+
+      navigate("/");
+    }
   };
   return (
     <>
