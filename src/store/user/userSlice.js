@@ -1,7 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { v4 as uuid } from "uuid";
-
-import { loginUserRequest, registerUserRequest } from "../../api/usersRequests";
+import { createSlice } from "@reduxjs/toolkit";
 
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = {
@@ -24,15 +21,6 @@ export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    registerUser: (state, action) => {
-      const { username, password, firstName, lastName } = action.payload;
-      const userId = uuid();
-
-      setLocalStorageUser(userId, username, firstName, lastName);
-
-      state.value.allUsers.push([userId, username, password, firstName, lastName]);
-      state.value.loggedInUser = { userId, username, firstName, lastName };
-    },
     loginUser: (state, action) => {
       const token = action.payload.jwtToken;
       const { id, username, firstName, lastName } = action.payload.user;
