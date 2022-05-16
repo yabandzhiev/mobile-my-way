@@ -8,6 +8,7 @@ import { Button, TextField, Grid, Typography } from "@mui/material";
 
 import { loginUser } from "../../../store/user/userSlice";
 import { addError, removeError } from "../../../store/error/errorsSlice";
+import { loginUserRequest } from "../../../api/usersRequests";
 
 const initialFormFields = {
   username: "",
@@ -26,9 +27,13 @@ const Login = () => {
   const { username, password } = formFields;
 
   //handle the submit logic
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginUser({ username, password }));
+
+    const existingUser = await loginUserRequest(username, password);
+    if (existingUser.status === 200) {
+      dispatch(loginUser(existingUser.data));
+    }
 
     const isLoggedIn = localStorage.getItem("user");
     if (isLoggedIn) {

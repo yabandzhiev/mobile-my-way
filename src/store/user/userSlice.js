@@ -1,5 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { v4 as uuid } from "uuid";
+
+import { loginUserRequest, registerUserRequest } from "../../api/usersRequests";
 
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = {
@@ -11,10 +13,10 @@ const initialState = {
     ],
   },
 };
-const setLocalStorageUser = (id, username, firstName, lastName) => {
+const setLocalStorageUser = (token, id, username, firstName, lastName) => {
   return localStorage.setItem(
     "user",
-    JSON.stringify([id, username, firstName, lastName])
+    JSON.stringify(token, id, username, firstName, lastName)
   );
 };
 
@@ -32,21 +34,11 @@ export const userSlice = createSlice({
       state.value.loggedInUser = { userId, username, firstName, lastName };
     },
     loginUser: (state, action) => {
-      const { username, password } = action.payload;
-      const existingUser = state.value.allUsers?.find((user) => user[1] === username);
+      const token = action.payload.jwtToken;
+      const { id, username, firstName, lastName } = action.payload.user;
 
-      if (existingUser) {
-        const userPassword = existingUser[2];
-        if (userPassword === password) {
-          const userId = existingUser[0];
-          const firstName = existingUser[3];
-          const lastName = existingUser[4];
-          state.value.loggedInUser = { userId, username, firstName, lastName };
-          setLocalStorageUser(userId, username, firstName, lastName);
-        }
-      } else {
-        return state;
-      }
+      state.value.loggedInUser = { token, id, username, firstName, lastName };
+      setLocalStorageUser({ token, id, username, firstName, lastName });
     },
     logoutUser: (state, action) => {
       localStorage.removeItem("user");
