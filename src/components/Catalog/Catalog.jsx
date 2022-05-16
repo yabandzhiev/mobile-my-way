@@ -21,7 +21,7 @@ const Catalog = () => {
   const userData = useSelector((state) => state.user.value.loggedInUser);
   const dispatch = useDispatch();
 
-  const userId = userData ? userData.userId : "";
+  const userId = userData ? userData.id : "";
   let dataToDisplay = data;
 
   //Check if there is user and sort cars
