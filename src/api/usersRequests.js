@@ -11,10 +11,8 @@ const loginUserRequest = async (username, password) => {
 
 const registerUserRequest = async (userData) => {
   try {
-    const userData = await axios.post(REGISTER_USER, {
-      userData,
-    });
-    return userData;
+    const userDataResult = await axios.post(REGISTER_USER, userData);
+    return userDataResult;
   } catch (error) {
     console.log(error.message);
   }
