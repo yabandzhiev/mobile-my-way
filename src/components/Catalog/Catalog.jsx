@@ -31,10 +31,10 @@ const Catalog = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(removeError());
     const getVehicles = async () => {
       const vehiclesResult = await getAllCarsRequest();
       return dispatch(setNewState(vehiclesResult.data));
-      //rezultata slagame v state-a i sled tova promeni v state-a/ pri refresh -> request s promenite ot state-a kum api
     };
     getVehicles();
   }, []);
@@ -76,7 +76,7 @@ const Catalog = () => {
                   <CloseIcon fontSize="inherit" />
                 </IconButton>
               }
-              sx={{ mb: 2 }}
+              sx={{ backgroundColor: "rgb(253, 237, 237) !important" }}
             >
               {errors.error}
             </Alert>
@@ -113,6 +113,8 @@ const Catalog = () => {
                         localStorageUser.token,
                         newData
                       );
+                      dispatch(removeError());
+
                       dispatch(addNewVehicle(response.data));
 
                       resolve();
@@ -135,6 +137,7 @@ const Catalog = () => {
                   }
 
                   const edit = async () => {
+                    dispatch(removeError());
                     dispatch(updateVehicle(newData));
                     await editCarRequest(localStorageUser.token, newData, userId);
                     resolve();
