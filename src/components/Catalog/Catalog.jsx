@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import MaterialTable from "material-table";
 import { useSelector, useDispatch } from "react-redux";
-import { v4 as uuid } from "uuid";
 
 import { columns } from "../../constants/columns";
 import {
+  setNewState,
   addNewVehicle,
   removeVehicle,
   updateVehicle,
 } from "../../store/vehicles/vehicleSlice";
+import {
+  createCarRequest,
+  deleteCarRequest,
+  editCarRequest,
+  getAllCarsRequest,
+} from "../../api/carsRequests";
 
 //check if rows are empty
 const validateRow = (row) => {
@@ -16,18 +22,30 @@ const validateRow = (row) => {
 };
 
 const Catalog = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getVehicles = async () => {
+      const vehiclesResult = await getAllCarsRequest();
+      return dispatch(setNewState(vehiclesResult.data));
+      //rezultata slagame v state-a i sled tova promeni v state-a/ pri refresh -> request s promenite ot state-a kum api
+    };
+    getVehicles();
+  }, []);
+
   //get cars and user from state
   const data = JSON.parse(JSON.stringify(useSelector((state) => state.vehicles.value)));
   const userData = useSelector((state) => state.user.value.loggedInUser);
-  const dispatch = useDispatch();
+  let localStorageUser = "";
 
   const userId = userData ? userData.id : "";
   let dataToDisplay = data;
 
   //Check if there is user and sort cars
   if (userId) {
-    const userVehicles = data.filter((vehicle) => vehicle.userId === userId);
-    const restOfVehicles = data.filter((vehicle) => vehicle.userId !== userId);
+    localStorageUser = JSON.parse(localStorage.getItem("user"));
+    const userVehicles = data.filter((vehicle) => vehicle.user.id === userId);
+    const restOfVehicles = data.filter((vehicle) => vehicle.user.id !== userId);
 
     dataToDisplay = [...userVehicles, ...restOfVehicles];
   }
@@ -40,10 +58,10 @@ const Catalog = () => {
         title="Mobile"
         options={{ addRowPosition: "first", pageSize: dataToDisplay.length > 5 ? 10 : 5 }}
         editable={{
-          isEditable: (rowData) => (userId ? rowData.userId === userId : rowData),
-          isEditHidden: (rowData) => (userId ? rowData.userId !== userId : rowData),
-          isDeletable: (rowData) => (userId ? rowData.userId === userId : rowData),
-          isDeleteHidden: (rowData) => (userId ? rowData.userId !== userId : rowData),
+          isEditable: (rowData) => (userId ? rowData.user.id === userId : rowData),
+          isEditHidden: (rowData) => (userId ? rowData.user.id !== userId : rowData),
+          isDeletable: (rowData) => (userId ? rowData.user.id === userId : rowData),
+          isDeleteHidden: (rowData) => (userId ? rowData.user.id !== userId : rowData),
 
           onRowAdd: userId
             ? (newData) =>
@@ -52,13 +70,17 @@ const Catalog = () => {
                   if (!isDataValid) {
                     reject();
                   } else {
-                    setTimeout(() => {
-                      newData.id = uuid();
-                      newData.userId = userId;
-                      dispatch(addNewVehicle(newData));
+                    const add = async () => {
+                      newData.user = userData;
+                      const response = await createCarRequest(
+                        localStorageUser.token,
+                        newData
+                      );
+                      dispatch(addNewVehicle(response.data));
 
                       resolve();
-                    }, 1000);
+                    };
+                    add();
                   }
                 })
             : null,
@@ -73,22 +95,25 @@ const Catalog = () => {
                     }
                   }
 
-                  setTimeout(() => {
+                  const edit = async () => {
                     dispatch(updateVehicle(newData));
-
+                    await editCarRequest(localStorageUser.token, newData, userId);
                     resolve();
-                  }, 1000);
+                  };
+                  edit();
                 })
             : null,
 
           onRowDelete: userId
             ? (oldData) =>
                 new Promise((resolve, reject) => {
-                  setTimeout(() => {
+                  const deleteRow = async () => {
                     dispatch(removeVehicle([oldData]));
+                    await deleteCarRequest(localStorageUser.token, oldData.id, userId);
 
                     resolve();
-                  }, 1000);
+                  };
+                  deleteRow();
                 })
             : null,
         }}
