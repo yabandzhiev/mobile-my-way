@@ -11,10 +11,20 @@ export const columns = [
   {
     title: "Engine Type",
     field: "engineType",
-    lookup: { 1: "Petrol", 2: "Diesel", 3: "Hybrid", 4: "Electric", 5: "LPG" },
+    lookup: {
+      PETROL: "PETROL",
+      DIESEL: "DIESEL",
+      HYBRID: "HYBRID",
+      ELECTRIC: "ELECTRIC",
+      LPG: "LPG",
+    },
   },
-  { title: "Gear Box", field: "gearbox", lookup: { 1: "Automatic", 2: "Manual" } },
-  { title: "Condition", field: "condition", lookup: { 1: "Used", 2: "New" } },
+  {
+    title: "Gear Box",
+    field: "gearBox",
+    lookup: { AUTOMATIC: "AUTOMATIC", MANUAL: "MANUAL" },
+  },
+  { title: "Condition", field: "condition", lookup: { USED: "USED", NEW: "NEW" } },
   { title: "Horse Power", field: "horsePower", type: "numeric" },
   { title: "Color", field: "color" },
   { title: "Price", field: "price", type: "currency" },
