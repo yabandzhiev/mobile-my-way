@@ -12,11 +12,10 @@ export const columns = [
     title: "Engine Type",
     field: "engineType",
     lookup: {
-      PETROL: "PETROL",
+      GASOLINE: "GASOLINE",
       DIESEL: "DIESEL",
       HYBRID: "HYBRID",
       ELECTRIC: "ELECTRIC",
-      LPG: "LPG",
     },
   },
   {
@@ -24,7 +23,11 @@ export const columns = [
     field: "gearBox",
     lookup: { AUTOMATIC: "AUTOMATIC", MANUAL: "MANUAL" },
   },
-  { title: "Condition", field: "condition", lookup: { USED: "USED", NEW: "NEW" } },
+  {
+    title: "Condition",
+    field: "condition",
+    lookup: { USED: "USED", NEW: "NEW", PARTS: "PARTS" },
+  },
   { title: "Horse Power", field: "horsePower", type: "numeric" },
   { title: "Color", field: "color" },
   { title: "Price", field: "price", type: "currency" },
