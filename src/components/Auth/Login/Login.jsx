@@ -31,12 +31,9 @@ const Login = () => {
     e.preventDefault();
 
     const existingUser = await loginUserRequest(username, password);
-    if (existingUser.status === 200) {
+    if (existingUser) {
+      dispatch(removeError());
       dispatch(loginUser(existingUser.data));
-    }
-
-    const isLoggedIn = localStorage.getItem("user");
-    if (isLoggedIn) {
       navigate("/");
     } else {
       dispatch(addError("Username or password is wrong!"));
