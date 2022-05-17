@@ -1,14 +1,20 @@
 import React, { useEffect } from "react";
 import MaterialTable from "material-table";
 import { useSelector, useDispatch } from "react-redux";
+import { Box, Alert, IconButton, Collapse } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { columns } from "../../constants/columns";
+
 import {
   setNewState,
   addNewVehicle,
   removeVehicle,
   updateVehicle,
 } from "../../store/vehicles/vehicleSlice";
+
+import { addError, removeError } from "../../store/error/errorsSlice";
+
 import {
   createCarRequest,
   deleteCarRequest,
@@ -33,9 +39,10 @@ const Catalog = () => {
     getVehicles();
   }, []);
 
-  //get cars and user from state
+  //get cars,user and errors from state
   const data = JSON.parse(JSON.stringify(useSelector((state) => state.vehicles.value)));
   const userData = useSelector((state) => state.user.value.loggedInUser);
+  const errors = useSelector((state) => state.errors.value);
   let localStorageUser = "";
 
   const userId = userData ? userData.id : "";
@@ -52,11 +59,40 @@ const Catalog = () => {
 
   return (
     <div>
+      {errors.error ? (
+        <Box sx={{ width: "100%" }}>
+          <Collapse in={errors.open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    dispatch(removeError());
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ mb: 2 }}
+            >
+              {errors.error}
+            </Alert>
+          </Collapse>
+        </Box>
+      ) : (
+        ""
+      )}
       <MaterialTable
         columns={columns}
         data={dataToDisplay}
         title="Mobile"
-        options={{ addRowPosition: "first", pageSize: dataToDisplay.length > 5 ? 10 : 5 }}
+        options={{
+          addRowPosition: "first",
+          pageSize: dataToDisplay.length > 10 ? 20 : 10,
+        }}
         editable={{
           isEditable: (rowData) => (userId ? rowData.user.id === userId : rowData),
           isEditHidden: (rowData) => (userId ? rowData.user.id !== userId : rowData),
@@ -68,6 +104,7 @@ const Catalog = () => {
                 new Promise((resolve, reject) => {
                   const isDataValid = validateRow(newData);
                   if (!isDataValid) {
+                    dispatch(addError("Fill in all fields first!"));
                     reject();
                   } else {
                     const add = async () => {
@@ -90,8 +127,10 @@ const Catalog = () => {
                 new Promise((resolve, reject) => {
                   //check if every field is filled
                   for (let key in newData) {
-                    if (newData[key] === "") {
-                      return reject();
+                    if (newData[key] === "" || newData[key] === 0) {
+                      dispatch(addError("Fill in all fields first!"));
+                      reject();
+                      return;
                     }
                   }
 
