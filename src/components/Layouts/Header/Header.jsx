@@ -1,7 +1,9 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+
 import { logoutUser } from "../../../store/user/userSlice";
+import { removeError } from "../../../store/error/errorsSlice";
 
 import "./Header.scss";
 
@@ -11,6 +13,7 @@ const Header = () => {
   const isLoggedIn = useSelector((state) => state.user.value.loggedInUser);
 
   const handleLoginPage = () => {
+    dispatch(removeError());
     navigate("/login");
   };
   const handleLogout = () => {
