@@ -50,6 +50,7 @@ const Register = () => {
       const login = await loginUserRequest(username, password);
 
       dispatch(loginUser(login.data));
+      dispatch(removeError());
 
       navigate("/");
     }
