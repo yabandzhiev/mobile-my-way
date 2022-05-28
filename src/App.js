@@ -7,7 +7,7 @@ import Login from "./components/Auth/Login/Login";
 import Register from "./components/Auth/Register/Register";
 import Catalog from "./components/Catalog/Catalog";
 
-import AuthRouteGuard from "./components/common/RoutesGuard/AuthRouteGuard";
+import AuthRouteGuard from "./common/RoutesGuard/AuthRouteGuard";
 import ErrorPage from "./components/ErrorPage/ErrorPage";
 
 function App() {
