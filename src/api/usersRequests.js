@@ -6,6 +6,7 @@ const loginUserRequest = async (username, password) => {
     return userData;
   } catch (error) {
     console.log(error.message);
+    return error;
   }
 };
 
@@ -15,6 +16,7 @@ const registerUserRequest = async (userData) => {
     return userDataResult;
   } catch (error) {
     console.log(error.message);
+    return error;
   }
 };
 
