@@ -10,6 +10,7 @@ import AuthFooter from "../AuthFooter/AuthFooter";
 import { loginUser } from "../../../store/user/userSlice";
 import { addError, removeError } from "../../../store/error/errorsSlice";
 import { loginUserRequest } from "../../../api/usersRequests";
+import AuthButton from "../AuthButton/AuthButton";
 
 const initialFormFields = {
   username: "",
@@ -105,11 +106,7 @@ const Login = () => {
                 required
               />
             </Grid>
-            <Grid item>
-              <Button variant="contained" type="submit" className="button-block">
-                Sign In
-              </Button>
-            </Grid>
+            <AuthButton buttonText={"Sign In"} />
           </Grid>
         </form>
       </Grid>

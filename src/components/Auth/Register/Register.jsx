@@ -11,6 +11,7 @@ import AuthFooter from "../AuthFooter/AuthFooter";
 import { addError, removeError } from "../../../store/error/errorsSlice";
 import { loginUserRequest, registerUserRequest } from "../../../api/usersRequests";
 import { loginUser } from "../../../store/user/userSlice";
+import AuthButton from "../AuthButton/AuthButton";
 
 const Register = () => {
   //store the values in state
@@ -188,11 +189,7 @@ const Register = () => {
                 }
               />
             </Grid>
-            <Grid item>
-              <Button variant="contained" type="submit" className="button-block">
-                Sign Up
-              </Button>
-            </Grid>
+            <AuthButton buttonText={"Sign Up"} />
           </Grid>
         </form>
       </Grid>
