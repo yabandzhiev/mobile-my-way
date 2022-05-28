@@ -1,59 +1,87 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button, TextField, Grid, Typography } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { v4 as uuid } from "uuid";
-import CloseIcon from "@mui/icons-material/Close";
-import { Box, Alert, IconButton, Collapse } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { TextField, Grid, Typography } from "@mui/material";
+import { useSelector } from "react-redux";
 
 import AuthFooter from "../AuthFooter/AuthFooter";
-
-import { addError, removeError } from "../../../store/error/errorsSlice";
-import { loginUserRequest, registerUserRequest } from "../../../api/usersRequests";
-import { loginUser } from "../../../store/user/userSlice";
 import AuthButton from "../AuthButton/AuthButton";
+import ErrorPopup from "../../ErrorPopup/ErrorPopup";
+
+import { loginUserRequest, registerUserRequest } from "../../../api/usersRequests";
+
+import {
+  useAuthActionsDispatch,
+  useErrorActionsDispatch,
+} from "../../../common/hooks/useActions";
+
+const initialFormFields = {
+  username: "",
+  password: "",
+  firstName: "",
+  lastName: "",
+};
 
 const Register = () => {
+  const { loginUser } = useAuthActionsDispatch();
+  const { addError, removeError } = useErrorActionsDispatch();
   //store the values in state
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [formFields, setFormFields] = useState(initialFormFields);
+
+  //get the values
+  const { username, password, firstName, lastName } = formFields;
+
+  //form input error state
+  const [errorText, setErrorText] = useState(initialFormFields);
 
   //get errors from state
   const errors = useSelector((state) => state.errors.value);
 
   let navigate = useNavigate();
-  const dispatch = useDispatch();
+
+  //validate every input length
+  const checkInputLength = (e, name) => {
+    if (e.target.value.length < 3 || e.target.value.length > 15) {
+      setErrorText({ ...errorText, [name]: `${name} must be between 3 and 15 letters` });
+    } else {
+      setErrorText({ ...errorText, [name]: null });
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    checkInputLength(e, name);
+
+    setFormFields({ ...formFields, [name]: value });
+  };
 
   //handle submit logic
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //iznasqne !!!
-    if (
-      firstName.length < 3 ||
-      lastName.length < 3 ||
-      username.length < 3 ||
-      password.length < 3
-    ) {
-      return dispatch(addError("Something isn't the exact length it has to be!"));
+    const isFormValid = Object.values(errorText).every((val) => {
+      if (val !== null) {
+        return false;
+      }
+      return true;
+    });
+
+    if (!isFormValid) {
+      addError("Please fill in all fields correctly!");
+      return;
     }
 
-    const id = uuid();
     const register = await registerUserRequest({
-      id,
       username,
       password,
       firstName,
       lastName,
     });
 
-    if (register.status === 200) {
+    if (register?.status === 200) {
       const login = await loginUserRequest(username, password);
 
-      dispatch(loginUser(login.data));
-      dispatch(removeError());
+      loginUser(login.data);
+      removeError();
 
       navigate("/");
     }
@@ -63,32 +91,9 @@ const Register = () => {
       <Grid item className="title">
         <Typography variant="h5">Register</Typography>
       </Grid>
-      {errors.error ? (
-        <Box sx={{ width: "100%" }}>
-          <Collapse in={errors.open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    dispatch(removeError());
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-              sx={{ mb: 2 }}
-            >
-              {errors.error}
-            </Alert>
-          </Collapse>
-        </Box>
-      ) : (
-        ""
-      )}
+
+      {errors.error ? <ErrorPopup error={errors.error} open={errors.open} /> : ""}
+
       <Grid item>
         <form onSubmit={handleSubmit}>
           <Grid container columnSpacing={2} className="name-input-fields">
@@ -102,17 +107,9 @@ const Register = () => {
                 autoFocus
                 fullWidth
                 value={firstName}
-                onChange={(e) => {
-                  setFirstName(e.target.value);
-                }}
-                error={firstName.length < 3 || firstName.length > 30}
-                helperText={
-                  firstName.length < 3
-                    ? "Name must be 3 letters or more!"
-                    : " " && firstName.length > 30
-                    ? "Name must be below 30 letters"
-                    : ""
-                }
+                onChange={handleChange}
+                error={errorText.firstName}
+                helperText={errorText.firstName}
               />
             </Grid>
             <Grid item>
@@ -125,19 +122,9 @@ const Register = () => {
                 autoFocus
                 fullWidth
                 value={lastName}
-                onChange={(e) => {
-                  setLastName(e.target.value);
-                }}
-                //iznasqne otnovo! isTextLengthInBoundary
-                error={lastName.length < 3 || lastName.length > 30}
-                //errorMessage
-                helperText={
-                  lastName.length < 3
-                    ? "Last name must be 3 letters or more!"
-                    : " " && lastName.length > 30
-                    ? "Last name must be below 30 letters"
-                    : ""
-                }
+                onChange={handleChange}
+                error={errorText.lastName}
+                helperText={errorText.lastName}
               />
             </Grid>
           </Grid>
@@ -154,17 +141,9 @@ const Register = () => {
                 fullWidth
                 autoFocus
                 value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
-                error={username.length < 3 || username.length > 30}
-                helperText={
-                  username.length < 3
-                    ? "Username must be 3 letters or more!"
-                    : " " && username.length > 30
-                    ? "Username must be below 30 letters"
-                    : ""
-                }
+                onChange={handleChange}
+                error={errorText.username}
+                helperText={errorText.username}
               />
             </Grid>
             <Grid item>
@@ -176,17 +155,9 @@ const Register = () => {
                 required
                 fullWidth
                 value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                error={password.length < 3 || password.length > 30}
-                helperText={
-                  password.length < 3
-                    ? "Password must be 3 letters or more!"
-                    : " " && password.length > 30
-                    ? "Password must be below 30 letters"
-                    : ""
-                }
+                onChange={handleChange}
+                error={errorText.password}
+                helperText={errorText.password}
               />
             </Grid>
             <AuthButton buttonText={"Sign Up"} />

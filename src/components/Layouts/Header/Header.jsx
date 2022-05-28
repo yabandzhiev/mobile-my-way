@@ -1,32 +1,37 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { logoutUser } from "../../../store/user/userSlice";
-import { removeError } from "../../../store/error/errorsSlice";
+import {
+  useAuthActionsDispatch,
+  useErrorActionsDispatch,
+} from "../../../common/hooks/useActions";
 
 import "./Header.scss";
 
 const Header = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isLoggedIn = useSelector((state) => state.user.value.loggedInUser);
+  const { removeError } = useErrorActionsDispatch();
+  const { logoutUser } = useAuthActionsDispatch();
+
+  const user = useSelector((state) => state.user.value.loggedInUser);
+  const isUserLoggedIn = Object.keys(user).length > 0;
 
   const handleLoginPage = () => {
-    dispatch(removeError());
+    removeError();
     navigate("/login");
   };
   const handleLogout = () => {
-    dispatch(logoutUser());
+    logoutUser();
   };
   return (
     <>
       <div className="header">
         <img src="/carLogo.png" alt="logo" className="logo" />
 
-        {Object.keys(isLoggedIn).length > 0 ? (
+        {isUserLoggedIn ? (
           <span className="authButton" onClick={handleLogout}>
-            Logout, {isLoggedIn.firstName} {isLoggedIn.lastName}
+            Logout, {user.firstName} {user.lastName}
           </span>
         ) : (
           <span className="authButton" onClick={handleLoginPage}>

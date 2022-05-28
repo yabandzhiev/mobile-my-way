@@ -1,19 +1,15 @@
 import React, { useEffect } from "react";
 import MaterialTable from "material-table";
-import { useSelector, useDispatch } from "react-redux";
-import { Box, Alert, IconButton, Collapse } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { useSelector } from "react-redux";
+
+import ErrorPopup from "../ErrorPopup/ErrorPopup";
 
 import { columns } from "../../constants/columns";
 
 import {
-  setNewState,
-  addNewVehicle,
-  removeVehicle,
-  updateVehicle,
-} from "../../store/vehicles/vehicleSlice";
-
-import { addError, removeError } from "../../store/error/errorsSlice";
+  useErrorActionsDispatch,
+  useCrudActionsDispatch,
+} from "../../common/hooks/useActions";
 
 import {
   createCarRequest,
@@ -28,17 +24,9 @@ const validateRow = (row) => {
 };
 
 const Catalog = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(removeError());
-    const getVehicles = async () => {
-      const vehiclesResult = await getAllCarsRequest();
-      return dispatch(setNewState(vehiclesResult.data));
-    };
-    getVehicles();
-  }, []);
-
+  const { addError, removeError } = useErrorActionsDispatch();
+  const { setNewState, addNewVehicle, removeVehicle, updateVehicle } =
+    useCrudActionsDispatch();
   //get cars,user and errors from state
   const data = JSON.parse(JSON.stringify(useSelector((state) => state.vehicles.value)));
   const userData = useSelector((state) => state.user.value.loggedInUser);
@@ -47,6 +35,18 @@ const Catalog = () => {
 
   const userId = userData ? userData.id : "";
   let dataToDisplay = data;
+  const lengthOfTable = dataToDisplay.length > 10 ? 20 : 10;
+
+  useEffect(() => {
+    removeError();
+
+    getVehicles();
+  }, []);
+
+  const getVehicles = async () => {
+    const vehiclesResult = await getAllCarsRequest();
+    return setNewState(vehiclesResult.data);
+  };
 
   //Check if there is user and sort cars
   if (userId) {
@@ -59,39 +59,15 @@ const Catalog = () => {
 
   return (
     <div>
-      {errors.error ? (
-        <Box sx={{ width: "100%" }}>
-          <Collapse in={errors.open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    dispatch(removeError());
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-              sx={{ backgroundColor: "rgb(253, 237, 237) !important" }}
-            >
-              {errors.error}
-            </Alert>
-          </Collapse>
-        </Box>
-      ) : (
-        ""
-      )}
+      {errors.error ? <ErrorPopup error={errors.error} open={errors.open} /> : ""}
+
       <MaterialTable
         columns={columns}
         data={dataToDisplay}
         title="Mobile"
         options={{
           addRowPosition: "first",
-          pageSize: dataToDisplay.length > 10 ? 20 : 10,
+          pageSize: lengthOfTable,
         }}
         editable={{
           isEditable: (rowData) => (userId ? rowData.user.id === userId : rowData),
@@ -104,7 +80,7 @@ const Catalog = () => {
                 new Promise((resolve, reject) => {
                   const isDataValid = validateRow(newData);
                   if (!isDataValid) {
-                    dispatch(addError("Fill in all fields first!"));
+                    addError("Fill in all fields first!");
                     reject();
                   } else {
                     const add = async () => {
@@ -113,9 +89,9 @@ const Catalog = () => {
                         localStorageUser.token,
                         newData
                       );
-                      dispatch(removeError());
+                      removeError();
 
-                      dispatch(addNewVehicle(response.data));
+                      addNewVehicle(response.data);
 
                       resolve();
                     };
@@ -130,15 +106,15 @@ const Catalog = () => {
                   //check if every field is filled
                   for (let key in newData) {
                     if (newData[key] === "" || newData[key] === 0) {
-                      dispatch(addError("Fill in all fields first!"));
+                      addError("Fill in all fields first!");
                       reject();
                       return;
                     }
                   }
 
                   const edit = async () => {
-                    dispatch(removeError());
-                    dispatch(updateVehicle(newData));
+                    removeError();
+                    updateVehicle(newData);
                     await editCarRequest(localStorageUser.token, newData, userId);
                     resolve();
                   };
@@ -150,7 +126,7 @@ const Catalog = () => {
             ? (oldData) =>
                 new Promise((resolve, reject) => {
                   const deleteRow = async () => {
-                    dispatch(removeVehicle([oldData]));
+                    removeVehicle([oldData]);
                     await deleteCarRequest(localStorageUser.token, oldData.id, userId);
 
                     resolve();

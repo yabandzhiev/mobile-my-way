@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Box, Alert, IconButton, Collapse } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { Button, TextField, Grid, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { TextField, Grid, Typography } from "@mui/material";
 
 import AuthFooter from "../AuthFooter/AuthFooter";
-
-import { loginUser } from "../../../store/user/userSlice";
-import { addError, removeError } from "../../../store/error/errorsSlice";
-import { loginUserRequest } from "../../../api/usersRequests";
 import AuthButton from "../AuthButton/AuthButton";
+import ErrorPopup from "../../ErrorPopup/ErrorPopup";
+
+import {
+  useAuthActionsDispatch,
+  useErrorActionsDispatch,
+} from "../../../common/hooks/useActions";
+
+import { loginUserRequest } from "../../../api/usersRequests";
 
 const initialFormFields = {
   username: "",
@@ -18,12 +20,13 @@ const initialFormFields = {
 };
 
 const Login = () => {
+  const { loginUser } = useAuthActionsDispatch();
+  const { addError, removeError } = useErrorActionsDispatch();
   //store the input values in state
   const [formFields, setFormFields] = useState(initialFormFields);
 
   //get errors from state
   const errors = useSelector((state) => state.errors.value);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { username, password } = formFields;
@@ -34,11 +37,11 @@ const Login = () => {
 
     const existingUser = await loginUserRequest(username, password);
     if (existingUser) {
-      dispatch(removeError());
-      dispatch(loginUser(existingUser.data));
+      removeError();
+      loginUser(existingUser.data);
       navigate("/");
     } else {
-      dispatch(addError("Username or password is wrong!"));
+      addError("Username or password is wrong!");
     }
   };
 
@@ -52,32 +55,9 @@ const Login = () => {
       <Grid item className="title">
         <Typography variant="h5">Sign in</Typography>
       </Grid>
-      {errors.error ? (
-        <Box sx={{ width: "100%" }}>
-          <Collapse in={errors.open}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    dispatch(removeError());
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-              sx={{ mb: 2 }}
-            >
-              {errors.error}
-            </Alert>
-          </Collapse>
-        </Box>
-      ) : (
-        ""
-      )}
+
+      {errors.error ? <ErrorPopup error={errors.error} open={errors.open} /> : ""}
+
       <Grid item>
         <form onSubmit={handleSubmit}>
           <Grid container direction="column" spacing={2} className="input-fields">
