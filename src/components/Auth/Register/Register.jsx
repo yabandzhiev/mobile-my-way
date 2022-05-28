@@ -3,10 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, TextField, Grid, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuid } from "uuid";
-
+import CloseIcon from "@mui/icons-material/Close";
 import { Box, Alert, IconButton, Collapse } from "@mui/material";
 
-import CloseIcon from "@mui/icons-material/Close";
+import AuthFooter from "../AuthFooter/AuthFooter";
 
 import { addError, removeError } from "../../../store/error/errorsSlice";
 import { loginUserRequest, registerUserRequest } from "../../../api/usersRequests";
@@ -28,6 +28,8 @@ const Register = () => {
   //handle submit logic
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    //iznasqne !!!
     if (
       firstName.length < 3 ||
       lastName.length < 3 ||
@@ -125,7 +127,9 @@ const Register = () => {
                 onChange={(e) => {
                   setLastName(e.target.value);
                 }}
+                //iznasqne otnovo! isTextLengthInBoundary
                 error={lastName.length < 3 || lastName.length > 30}
+                //errorMessage
                 helperText={
                   lastName.length < 3
                     ? "Last name must be 3 letters or more!"
@@ -193,15 +197,7 @@ const Register = () => {
         </form>
       </Grid>
 
-      <Grid item className="links">
-        <p>
-          Already have an account? <Link to="/login">Sign in</Link>
-        </p>
-      </Grid>
-
-      <Grid item className="logo">
-        <span>Copyright © Mobile2022</span>
-      </Grid>
+      <AuthFooter />
     </>
   );
 };

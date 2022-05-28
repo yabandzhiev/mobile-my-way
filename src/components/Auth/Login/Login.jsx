@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
 import { Box, Alert, IconButton, Collapse } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Button, TextField, Grid, Typography } from "@mui/material";
+
+import AuthFooter from "../AuthFooter/AuthFooter";
 
 import { loginUser } from "../../../store/user/userSlice";
 import { addError, removeError } from "../../../store/error/errorsSlice";
@@ -113,17 +114,7 @@ const Login = () => {
         </form>
       </Grid>
 
-      <Grid item className="links">
-        <Link to="/register">Dont have an account?</Link>
-      </Grid>
-      <Grid item className="links">
-        <Link to="/">Continue to catalog</Link>
-      </Grid>
-      <Grid item className="logo">
-        <img src="/carLogo.png" alt="logo" />
-        <br />
-        <span>Copyright © Mobile2022</span>
-      </Grid>
+      <AuthFooter isSignIn={true} />
     </>
   );
 };
