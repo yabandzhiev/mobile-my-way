@@ -36,7 +36,6 @@ const Login = () => {
     e.preventDefault();
 
     const existingUser = await loginUserRequest(email, password);
-    console.log(existingUser);
     if (existingUser) {
       removeError();
       loginUser(existingUser.data);
