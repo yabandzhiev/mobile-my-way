@@ -5,6 +5,14 @@ describe("First Tests", () => {
     cy.visit("/");
   });
 
+  it("should load homepage without data", () => {
+    const emptyArr = [];
+
+    cy.intercept("GET", "**/all", { emptyArr });
+
+    cy.get(".MuiTable-root").should("contain", "No records to display");
+  });
+
   it("should load homepage with  data", () => {
     cy.intercept("GET", "**/all").as("allVehicles");
     cy.wait("@allVehicles");
@@ -15,25 +23,8 @@ describe("First Tests", () => {
     });
   });
 
-  it("should load homepage without data", () => {
-    const emptyArr = [];
-
-    cy.intercept("GET", "**/all", { emptyArr });
-
-    cy.get(".MuiTable-root").should("contain", "No records to display");
-  });
-
-  it.only("should login, check localStorage and go to homepage", () => {
-    cy.get(".header").contains("LOGIN").click();
-    cy.get("form").find('[name="email"]').clear().type(Cypress.env("email"));
-    cy.get("form")
-      .find('[name="password"]')
-      .clear()
-      .type(Cypress.env("password"));
-
-    cy.intercept("POST", "**/users/login").as("loginReq");
-
-    cy.contains("Sign In").click();
+  it("should login, check localStorage and go to homepage", () => {
+    cy.loginToApp();
 
     cy.wait("@loginReq");
     cy.get("@loginReq").then((body) => {
@@ -47,6 +38,27 @@ describe("First Tests", () => {
       expect(token).to.equal(localStorageToken);
       expect(userId).to.equal(localStorageUserId);
       cy.url().should("eq", "http://localhost:3000/");
+      cy.get(".header")
+        .contains("Logout")
+        .click()
+        .should(() => {
+          expect(localStorage.getItem("user")).to.be.null;
+        });
     });
+  });
+
+  it("should have add button after sign in", () => {
+    cy.loginToApp();
+    cy.wait("@loginReq");
+
+    cy.get('button[title="Add"]').as("addBtn");
+
+    cy.get("@addBtn").should("be.visible");
+    cy.get(".header")
+      .contains("Logout")
+      .click()
+      .should(() => {
+        expect(localStorage.getItem("user")).to.be.null;
+      });
   });
 });
