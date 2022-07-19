@@ -7,7 +7,10 @@ import AuthFooter from "../AuthFooter/AuthFooter";
 import AuthButton from "../AuthButton/AuthButton";
 import ErrorPopup from "../../ErrorPopup/ErrorPopup";
 
-import { loginUserRequest, registerUserRequest } from "../../../api/usersRequests";
+import {
+  loginUserRequest,
+  registerUserRequest,
+} from "../../../api/usersRequests";
 
 import {
   useAuthActionsDispatch,
@@ -15,7 +18,7 @@ import {
 } from "../../../common/hooks/useActions";
 
 const initialFormFields = {
-  username: "",
+  email: "",
   password: "",
   firstName: "",
   lastName: "",
@@ -28,7 +31,7 @@ const Register = () => {
   const [formFields, setFormFields] = useState(initialFormFields);
 
   //get the values
-  const { username, password, firstName, lastName } = formFields;
+  const { email, password, firstName, lastName } = formFields;
 
   //form input error state
   const [errorText, setErrorText] = useState(initialFormFields);
@@ -41,7 +44,10 @@ const Register = () => {
   //validate every input length
   const checkInputLength = (e, name) => {
     if (e.target.value.length < 3 || e.target.value.length > 15) {
-      setErrorText({ ...errorText, [name]: `${name} must be between 3 and 15 letters` });
+      setErrorText({
+        ...errorText,
+        [name]: `${name} must be between 3 and 15 letters`,
+      });
     } else {
       setErrorText({ ...errorText, [name]: null });
     }
@@ -71,14 +77,14 @@ const Register = () => {
     }
 
     const register = await registerUserRequest({
-      username,
+      email,
       password,
       firstName,
       lastName,
     });
 
     if (register?.status === 200) {
-      const login = await loginUserRequest(username, password);
+      const login = await loginUserRequest(email, password);
 
       loginUser(login.data);
       removeError();
@@ -92,7 +98,11 @@ const Register = () => {
         <Typography variant="h5">Register</Typography>
       </Grid>
 
-      {errors.error ? <ErrorPopup error={errors.error} open={errors.open} /> : ""}
+      {errors.error ? (
+        <ErrorPopup error={errors.error} open={errors.open} />
+      ) : (
+        ""
+      )}
 
       <Grid item>
         <form onSubmit={handleSubmit}>
@@ -130,20 +140,25 @@ const Register = () => {
           </Grid>
 
           <br />
-          <Grid container direction="column" spacing={2} className="input-fields">
+          <Grid
+            container
+            direction="column"
+            spacing={2}
+            className="input-fields"
+          >
             <Grid item>
               <TextField
                 type="text"
-                label="Username"
-                name="username"
+                label="Email"
+                name="email"
                 variant="outlined"
                 required
                 fullWidth
                 autoFocus
-                value={username}
+                value={email}
                 onChange={handleChange}
-                error={errorText.username}
-                helperText={errorText.username}
+                error={errorText.email}
+                helperText={errorText.email}
               />
             </Grid>
             <Grid item>

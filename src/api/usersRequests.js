@@ -1,8 +1,11 @@
 import { axios, LOGIN_USER, REGISTER_USER } from "../constants/backend";
 
-const loginUserRequest = async (username, password) => {
+const loginUserRequest = async (email, password) => {
   try {
-    const userData = await axios.post(LOGIN_USER, { username, password });
+    const userData = await axios.post(LOGIN_USER, {
+      username: email,
+      password,
+    });
     return userData;
   } catch (error) {
     console.log(error.message);

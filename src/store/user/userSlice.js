@@ -6,10 +6,10 @@ const initialState = {
     loggedInUser: user ? user : {},
   },
 };
-const setLocalStorageUser = (token, id, username, firstName, lastName) => {
+const setLocalStorageUser = (token, id, email, firstName, lastName) => {
   return localStorage.setItem(
     "user",
-    JSON.stringify(token, id, username, firstName, lastName)
+    JSON.stringify(token, id, email, firstName, lastName)
   );
 };
 
@@ -19,10 +19,10 @@ export const userSlice = createSlice({
   reducers: {
     loginUser: (state, action) => {
       const token = action.payload.jwtToken;
-      const { id, username, firstName, lastName } = action.payload.user;
+      const { id, email, firstName, lastName } = action.payload.user;
 
-      state.value.loggedInUser = { id, username, firstName, lastName };
-      setLocalStorageUser({ token, id, username, firstName, lastName });
+      state.value.loggedInUser = { id, email, firstName, lastName };
+      setLocalStorageUser({ token, id, email, firstName, lastName });
     },
     logoutUser: (state, action) => {
       localStorage.removeItem("user");

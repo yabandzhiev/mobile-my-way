@@ -15,7 +15,7 @@ import {
 import { loginUserRequest } from "../../../api/usersRequests";
 
 const initialFormFields = {
-  username: "",
+  email: "",
   password: "",
 };
 
@@ -29,19 +29,20 @@ const Login = () => {
   const errors = useSelector((state) => state.errors.value);
   const navigate = useNavigate();
 
-  const { username, password } = formFields;
+  const { email, password } = formFields;
 
   //handle the submit logic
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const existingUser = await loginUserRequest(username, password);
+    const existingUser = await loginUserRequest(email, password);
+    console.log(existingUser);
     if (existingUser) {
       removeError();
       loginUser(existingUser.data);
       navigate("/");
     } else {
-      addError("Username or password is wrong!");
+      addError("Email or password is wrong!");
     }
   };
 
@@ -56,19 +57,28 @@ const Login = () => {
         <Typography variant="h5">Sign in</Typography>
       </Grid>
 
-      {errors.error ? <ErrorPopup error={errors.error} open={errors.open} /> : ""}
+      {errors.error ? (
+        <ErrorPopup error={errors.error} open={errors.open} />
+      ) : (
+        ""
+      )}
 
       <Grid item>
         <form onSubmit={handleSubmit}>
-          <Grid container direction="column" spacing={2} className="input-fields">
+          <Grid
+            container
+            direction="column"
+            spacing={2}
+            className="input-fields"
+          >
             <Grid item>
               <TextField
                 type="text"
-                label="Username"
-                name="username"
+                label="Email"
+                name="email"
                 variant="outlined"
                 onChange={handleChange}
-                value={username}
+                value={email}
                 required
                 fullWidth
                 autoFocus
